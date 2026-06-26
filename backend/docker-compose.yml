@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: shifts_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: shifts
+      POSTGRES_PASSWORD: shifts
+      POSTGRES_DB: shifts
+    ports:
+      - "5432:5432"
+    volumes:
+      - shifts_data:/var/lib/postgresql/data
+      - ./src/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shifts -d shifts"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  shifts_data:
